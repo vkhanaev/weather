@@ -1,16 +1,18 @@
 package com.example.weather.ui.view
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.weather.databinding.MainFragmentBinding
 import com.example.weather.domain.Weather
 import com.example.weather.viewmodel.AppState
 import com.google.android.material.snackbar.Snackbar
+import java.lang.IllegalStateException
+
 
 class MainFragment : Fragment() {
 
@@ -69,10 +71,9 @@ class MainFragment : Fragment() {
             }
             is AppState.Error -> {
                 binding.loadingLayout.visibility = View.GONE
-                Snackbar
-                    .make(binding.mainView, "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") { viewModel.getWeatherFromLocalSource() }
-                    .show()
+                val error = appState.error
+                setError(error)
+
             }
         }
 
@@ -83,6 +84,18 @@ class MainFragment : Fragment() {
         binding.temperatureValue.text = weatherData.temperature.toString()
         binding.feelsLikeValue.text = weatherData.feelsLike.toString()
         binding.cityCoordinates.text = "${weatherData.city.lat}/${weatherData.city.lon}"
+    }
+
+    private fun setError(error: Throwable) {
+        Snackbar
+            .make(binding.mainView, "Ошибка $error", Snackbar.LENGTH_INDEFINITE)
+            .setAction("Reload") { viewModel.getWeatherFromLocalSource() }
+            .show()
+
+        binding.cityName.text = "Unknown"
+        binding.temperatureValue.text = "Unknown"
+        binding.feelsLikeValue.text = "Unknown"
+        binding.cityCoordinates.text = "Unknown"
     }
 
 }

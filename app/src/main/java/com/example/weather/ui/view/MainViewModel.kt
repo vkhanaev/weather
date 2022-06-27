@@ -49,10 +49,8 @@ class MainViewModel(
         }.start()
         */
 
-
-
-        if((0..3).random() == 2) { //FIXME
-            liveDataToObserve.postValue(AppState.Error(throw IllegalStateException("что-то пошло не так")))
+        if(Random.nextInt(0,3) == 2) {
+            liveDataToObserve.postValue(AppState.Error(IllegalStateException("что-то пошло не так")))
         }else{
             liveDataToObserve.postValue(AppState.Success(repository.getWeather(55.755826, 37.617299900000035)))
         }
@@ -65,5 +63,7 @@ class MainViewModel(
 
     override fun onCleared() { // TODO HW ***
         super.onCleared()
+
     }
+
 }
