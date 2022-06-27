@@ -1,4 +1,4 @@
-package com.example.weather.ui.main
+package com.example.weather.ui.view
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -6,11 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
-import com.example.weather.MainActivity
-import com.example.weather.R
 import com.example.weather.databinding.MainFragmentBinding
+import com.example.weather.domain.Weather
 import com.example.weather.viewmodel.AppState
 import com.google.android.material.snackbar.Snackbar
 
@@ -42,27 +40,29 @@ class MainFragment : Fragment() {
 
         // Добавили observer, что такое it?
         // Получили LiveData, вызвали observe
-        val observer = Observer<AppState> { renderData(it) }
-        val LiveData = viewModel.getLiveData()
-        LiveData.observe(viewLifecycleOwner, observer)  // Теперь, если данные, которые хранит LiveData, изменятся, Observer сразу об этом узнает и вызовет метод renderData, куда передаст новые данные.
-/*
+        //val observer = Observer<AppState> { renderData(it) }
+        //val LiveData = viewModel.getLiveData()
+        //LiveData.observe(viewLifecycleOwner, observer)  // Теперь, если данные, которые хранит LiveData, изменятся, Observer сразу об этом узнает и вызовет метод renderData, куда передаст новые данные.
+
         // Подписываемся, Any - тип объекта в liveDataToObserve
-        viewModel.liveDataToObserve.observe(viewLifecycleOwner, object : Observer<AppState> {
-            override fun onChanged(t: AppState?) {
-                Toast.makeText(context, "Работает $t", Toast.LENGTH_LONG).show()
+        viewModel.getLiveData().observe(viewLifecycleOwner, object : Observer<AppState> {
+            override fun onChanged(t: AppState) {
+                //Toast.makeText(context, "Работает $t", Toast.LENGTH_LONG).show()
+                renderData(t)
             }
 
         })
-*/
+
         // Отправляем запрос на получение данных
-        viewModel.getWeather()
+        viewModel.getWeatherFromLocalSource()
     }
     private fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
                 val weatherData = appState.weatherData
                 binding.loadingLayout.visibility = View.GONE
-                Snackbar.make(binding.mainView, "Success", Snackbar.LENGTH_LONG).show()
+                // покажем полученные данные
+                setData(weatherData)
             }
             is AppState.Loading -> {
                 binding.loadingLayout.visibility = View.VISIBLE
@@ -71,13 +71,18 @@ class MainFragment : Fragment() {
                 binding.loadingLayout.visibility = View.GONE
                 Snackbar
                     .make(binding.mainView, "Error", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Reload") { viewModel.getWeather() }
+                    .setAction("Reload") { viewModel.getWeatherFromLocalSource() }
                     .show()
             }
         }
 
     }
 
-
+    private fun setData(weatherData: Weather) {
+        binding.cityName.text = weatherData.city.name
+        binding.temperatureValue.text = weatherData.temperature.toString()
+        binding.feelsLikeValue.text = weatherData.feelsLike.toString()
+        binding.cityCoordinates.text = "${weatherData.city.lat}/${weatherData.city.lon}"
+    }
 
 }
