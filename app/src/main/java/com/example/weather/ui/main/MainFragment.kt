@@ -8,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import com.example.weather.MainActivity
 import com.example.weather.R
 import com.example.weather.databinding.MainFragmentBinding
+import com.example.weather.viewmodel.AppState
+import com.google.android.material.snackbar.Snackbar
 
 class MainFragment : Fragment() {
 
@@ -39,23 +42,40 @@ class MainFragment : Fragment() {
 
         // Добавили observer, что такое it?
         // Получили LiveData, вызвали observe
-        //val observer = Observer<Any> { renderData(it) }
-        //val LiveData = viewModel.getData()
-        //LiveData.observe(viewLifecycleOwner, observer)  // Теперь, если данные, которые хранит LiveData, изменятся, Observer сразу об этом узнает и вызовет метод renderData, куда передаст новые данные.
-
+        val observer = Observer<AppState> { renderData(it) }
+        val LiveData = viewModel.getLiveData()
+        LiveData.observe(viewLifecycleOwner, observer)  // Теперь, если данные, которые хранит LiveData, изменятся, Observer сразу об этом узнает и вызовет метод renderData, куда передаст новые данные.
+/*
         // Подписываемся, Any - тип объекта в liveDataToObserve
-        viewModel.liveDataToObserve.observe(viewLifecycleOwner, object : Observer<Any> {
-            override fun onChanged(t: Any?) {
+        viewModel.liveDataToObserve.observe(viewLifecycleOwner, object : Observer<AppState> {
+            override fun onChanged(t: AppState?) {
                 Toast.makeText(context, "Работает $t", Toast.LENGTH_LONG).show()
             }
 
         })
-
-        // Отправляем запрос на обновление данных
-        viewModel.getData()
+*/
+        // Отправляем запрос на получение данных
+        viewModel.getWeather()
     }
-    private fun renderData(data: Any) {
-        Toast.makeText(context, "data", Toast.LENGTH_LONG).show()
+    private fun renderData(appState: AppState) {
+        when (appState) {
+            is AppState.Success -> {
+                val weatherData = appState.weatherData
+                binding.loadingLayout.visibility = View.GONE
+                Snackbar.make(binding.mainView, "Success", Snackbar.LENGTH_LONG).show()
+            }
+            is AppState.Loading -> {
+                binding.loadingLayout.visibility = View.VISIBLE
+            }
+            is AppState.Error -> {
+                binding.loadingLayout.visibility = View.GONE
+                Snackbar
+                    .make(binding.mainView, "Error", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Reload") { viewModel.getWeather() }
+                    .show()
+            }
+        }
+
     }
 
 
