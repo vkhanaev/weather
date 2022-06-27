@@ -6,7 +6,9 @@ import com.example.weather.model.Repository
 import com.example.weather.model.RepositoryLocalImpl
 import com.example.weather.model.RepositoryRemoteImpl
 import com.example.weather.viewmodel.AppState
+import java.lang.IllegalStateException
 import java.lang.Thread.sleep
+import kotlin.random.Random
 
 // Добавили в конструктор реализацию liveData
 class MainViewModel(
@@ -38,15 +40,30 @@ class MainViewModel(
         // Перед отправкой «асинхронного запроса» состояние приложения меняется на Loading
         liveDataToObserve.value = AppState.Loading
 
+        // Эмулируем ошибку
+        /*
         Thread {
             sleep(300L)
             // Если данные передаются в основном потоке, используем метод setValue. Отправляем данные из репозитория
             liveDataToObserve.postValue(AppState.Success(repository.getWeather(55.755826, 37.617299900000035)))
         }.start()
+        */
+
+
+
+        if((0..3).random() == 2) { //FIXME
+            liveDataToObserve.postValue(AppState.Error(throw IllegalStateException("что-то пошло не так")))
+        }else{
+            liveDataToObserve.postValue(AppState.Success(repository.getWeather(55.755826, 37.617299900000035)))
+        }
     }
 
     // добавили из урока
     private fun isConnection(): Boolean {
         return false
+    }
+
+    override fun onCleared() { // TODO HW ***
+        super.onCleared()
     }
 }
