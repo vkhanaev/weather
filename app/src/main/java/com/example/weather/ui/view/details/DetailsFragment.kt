@@ -9,23 +9,27 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.weather.R
 import com.example.weather.databinding.FragmentDetailsBinding
 import com.example.weather.domain.Weather
 import com.example.weather.viewmodel.AppState
 import com.google.android.material.snackbar.Snackbar
 
 
-class DetailsFragment {
-}
-
-
-class MainFragment : Fragment() {
+class DetailsFragment : Fragment() {
 
     companion object {
-        fun newInstance() = MainFragment()
+        const val BUNDLE_EXTRA = "weather"
+
+        // классы храним в bundle
+        fun newInstance(bundle: Bundle) : DetailsFragment {
+            val fragment = DetailsFragment()
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
-    private lateinit var viewModel: MainViewModel
+    //private lateinit var viewModel: MainViewModel
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
@@ -34,30 +38,30 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Заменил на binding
         _binding = FragmentDetailsBinding.inflate(inflater)
         return binding.root
     }
 
-    // Заменили onActivityCreated на onViewCreated
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Подключили viewModel
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        val weather = arguments?.getParcelable<Weather>(BUNDLE_EXTRA)
+        if (weather != null) {
+            val city = weather.city
+            binding.cityName.text = city.name
+            binding.cityCoordinates.text = String.format(
+                getString(R.string.city_coordinates),
+                city.lat.toString(),
+                city.lon.toString()
+            )
+            binding.temperatureValue.text = weather.temperature.toString()
+            binding.feelsLikeValue.text = weather.feelsLike.toString()
 
-        // Подписываемся, Any - тип объекта в liveDataToObserve
-        viewModel.getLiveData().observe(viewLifecycleOwner, object : Observer<AppState> {
-            override fun onChanged(t: AppState) {
-                renderData(t)
-            }
+        }
 
-        })
-
-        // Отправляем запрос на получение данных
-        //viewModel.getWeatherFromRemoteSourceRussia()
-        viewModel.getWeather()
     }
+
+    /*
     private fun renderData(appState: AppState) {
         when (appState) {
             is AppState.SuccessSingle -> {
@@ -97,6 +101,7 @@ class MainFragment : Fragment() {
         binding.feelsLikeValue.text = "Unknown"
         binding.cityCoordinates.text = "Unknown"
     }
+    */
 
     override fun onDestroyView() {
         super.onDestroyView()

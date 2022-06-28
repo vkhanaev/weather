@@ -1,17 +1,22 @@
 package com.example.weather.domain
 
-// Создали модель данных
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+// добавили парселизацию, чтобы передавать данные между фрагментами
+@Parcelize
 data class City(
     val name: String,
     val lat: Double,
     val lon: Double
-)
+) : Parcelable
 
+@Parcelize
 data class Weather(
     val city: City = getDefaultCity(),
     val temperature: Int = 20,
     val feelsLike: Int = 21
-)
+) : Parcelable
 
 fun getDefaultCity() = City("Москва", 55.755826, 37.617299900000035)
 

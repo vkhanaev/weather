@@ -11,6 +11,8 @@ import com.example.weather.R
 import com.example.weather.databinding.MainFragmentBinding
 import com.example.weather.domain.Weather
 import com.example.weather.model.Location
+import com.example.weather.ui.view.details.DetailsFragment
+import com.example.weather.ui.view.details.OnItemViewClickListener
 import com.example.weather.viewmodel.AppState
 import com.google.android.material.snackbar.Snackbar
 
@@ -25,8 +27,24 @@ class MainFragment : Fragment() {
     private var _binding: MainFragmentBinding? = null
     private val binding get() = _binding!!
 
-    // Добавили adapter
-    private val adapter = MainFragmentAdapter()
+    // Обновили adapter
+    private val adapter = MainFragmentAdapter(object : OnItemViewClickListener {
+        override fun onItemViewClick(weather: Weather) {
+            val manager = activity?.supportFragmentManager
+            if (manager != null) {
+                val bundle = Bundle()
+                bundle.putParcelable(DetailsFragment.BUNDLE_EXTRA, weather)
+                manager.beginTransaction()
+                    .add(R.id.container, DetailsFragment.newInstance(bundle))
+                    .addToBackStack("")
+                    .commitAllowingStateLoss()
+            }
+        }
+    })
+
+
+
+
     //private var isDataSetRus: Boolean = true
     private var location : Location = Location.Russian
 
@@ -101,6 +119,7 @@ class MainFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        adapter.removeListener()
         super.onDestroyView()
         _binding = null
     }
