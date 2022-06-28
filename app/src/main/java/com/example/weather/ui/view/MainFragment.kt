@@ -11,7 +11,6 @@ import com.example.weather.databinding.MainFragmentBinding
 import com.example.weather.domain.Weather
 import com.example.weather.viewmodel.AppState
 import com.google.android.material.snackbar.Snackbar
-import java.lang.IllegalStateException
 
 
 class MainFragment : Fragment() {
@@ -21,14 +20,16 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
-    private lateinit var binding: MainFragmentBinding
+    private var _binding: MainFragmentBinding? = null
+    private val binding get() = _binding!!
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Заменил на binding
-        binding = MainFragmentBinding.inflate(inflater)
+        _binding = MainFragmentBinding.inflate(inflater)
         return binding.root
         //return inflater.inflate(R.layout.main_fragment, container, false)
     }
@@ -56,11 +57,12 @@ class MainFragment : Fragment() {
         })
 
         // Отправляем запрос на получение данных
-        viewModel.getWeatherFromLocalSource()
+        //viewModel.getWeatherFromRemoteSourceRussia()
+        viewModel.getWeather()
     }
     private fun renderData(appState: AppState) {
         when (appState) {
-            is AppState.Success -> {
+            is AppState.SuccessSingle -> {
                 val weatherData = appState.weatherData
                 binding.loadingLayout.visibility = View.GONE
                 // покажем полученные данные
@@ -89,7 +91,7 @@ class MainFragment : Fragment() {
     private fun setError(error: Throwable) {
         Snackbar
             .make(binding.mainView, "Ошибка $error", Snackbar.LENGTH_INDEFINITE)
-            .setAction("Reload") { viewModel.getWeatherFromLocalSource() }
+            .setAction("Reload") { viewModel.getWeather() }
             .show()
 
         binding.cityName.text = "Unknown"
@@ -97,5 +99,11 @@ class MainFragment : Fragment() {
         binding.feelsLikeValue.text = "Unknown"
         binding.cityCoordinates.text = "Unknown"
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 
 }
