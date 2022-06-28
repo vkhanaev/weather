@@ -3,7 +3,7 @@ package com.example.weather
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.weather.databinding.MainActivityBinding
-import com.example.weather.ui.view.MainFragment
+import com.example.weather.ui.view.weatherlist.MainFragment
 
 class MainActivity : AppCompatActivity() {
 

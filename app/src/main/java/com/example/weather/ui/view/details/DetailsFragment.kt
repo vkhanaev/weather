@@ -1,6 +1,6 @@
 package com.example.weather.ui.view.details
 
-import com.example.weather.ui.view.MainViewModel
+import com.example.weather.ui.view.weatherlist.MainViewModel
 
 import android.os.Bundle
 import android.view.LayoutInflater
