@@ -16,19 +16,17 @@ import com.example.weather.ui.view.details.OnItemViewClickListener
 import com.example.weather.viewmodel.AppState
 import com.google.android.material.snackbar.Snackbar
 
-
-class MainFragment : Fragment() {
+class WeatherListFragment : Fragment() {
 
     companion object {
-        fun newInstance() = MainFragment()
+        fun newInstance() = WeatherListFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
+    private lateinit var viewModel: WeatherListViewModel
     private var _binding: MainFragmentBinding? = null
     private val binding get() = _binding!!
 
-    // Обновили adapter
-    private val adapter = MainFragmentAdapter(object : OnItemViewClickListener {
+    private val adapter = WeatherListAdapter(object : OnItemViewClickListener {
         override fun onItemViewClick(weather: Weather) {
             val manager = activity?.supportFragmentManager
             if (manager != null) {
@@ -42,12 +40,7 @@ class MainFragment : Fragment() {
         }
     })
 
-
-
-
-    //private var isDataSetRus: Boolean = true
     private var location : Location = Location.Russian
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,33 +50,29 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
-     // Заменили onActivityCreated на onViewCreated
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-         // Подключили adapter для наполнения RecyclerView
-         binding.mainFragmentRecyclerView.adapter = adapter
-         binding.mainFragmentFAB.setOnClickListener {changeWeatherDataSet()}  // добавили listener на FAB
 
-         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+         binding.mainFragmentRecyclerView.adapter = adapter
+         binding.mainFragmentFAB.setOnClickListener {changeWeatherDataSet()}
+
+         viewModel = ViewModelProvider(this).get(WeatherListViewModel::class.java)
          viewModel.getLiveData().observe(viewLifecycleOwner, object : Observer<AppState> {
             override fun onChanged(t: AppState) {
                 renderData(t)
             }
-
         })
 
-        // Отправляем запрос на получение данных
-        viewModel.getWeatherListFromLocalSourceRussia()
+        viewModel.getWeatherListForRussia()
     }
 
-    // меняем location и загружаем список городов для location
     private fun changeWeatherDataSet() {
         if (location == Location.Russian) {
-            viewModel.getWeatherListFromLocalSourceWorld()
+            viewModel.getWeatherListForWorld()
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
             location = Location.World
         } else {
-            viewModel.getWeatherListFromLocalSourceRussia()
+            viewModel.getWeatherListForRussia()
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
             location = Location.Russian
         }
@@ -103,18 +92,14 @@ class MainFragment : Fragment() {
                 binding.mainFragmentLoadingLayout.visibility = View.GONE
                 val error = appState.error
                 setError(error)
-
             }
         }
-
     }
 
     private fun setError(error: Throwable) {
         Snackbar
             .make(binding.mainFragmentFAB, "Ошибка $error", Snackbar.LENGTH_INDEFINITE)
-            //.setAction("Reload") { viewModel.getWeather() }
-            .setAction(getString(R.string.reload)) { viewModel.getWeatherListFromLocalSourceRussia()}
-
+            .setAction(getString(R.string.reload)) { viewModel.getWeatherListForRussia()}
             .show()
     }
 
@@ -123,6 +108,5 @@ class MainFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 
 }

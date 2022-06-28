@@ -3,7 +3,6 @@ package com.example.weather.domain
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
-// добавили парселизацию, чтобы передавать данные между фрагментами
 @Parcelize
 data class City(
     val name: String,

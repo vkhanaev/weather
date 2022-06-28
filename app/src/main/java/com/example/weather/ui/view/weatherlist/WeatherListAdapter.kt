@@ -4,20 +4,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather.R
 import com.example.weather.domain.Weather
 import com.example.weather.ui.view.details.OnItemViewClickListener
 
-class MainFragmentAdapter(private var onItemViewClickListener: OnItemViewClickListener?) : RecyclerView.Adapter<MainFragmentAdapter.MainViewHolder>() {
-    private var weatherData: List<Weather> = listOf() // список городов
+class WeatherListAdapter(private var onItemViewClickListener: OnItemViewClickListener?) : RecyclerView.Adapter<WeatherListAdapter.MainViewHolder>() {
+    private var weatherData: List<Weather> = listOf()
     fun setWeather(data: List<Weather>) {
-        weatherData = data  // обновляем список
-        notifyDataSetChanged()  // уведомляем RecyclerView об изменении
+        weatherData = data
+        notifyDataSetChanged()
     }
 
-    // чтобы не возникало утечек памяти. Рекомендуется вызывать этот метод адаптера в методе onDestroy фрагмента MainFragment.
     fun removeListener() {
         onItemViewClickListener = null
     }
@@ -47,13 +45,6 @@ class MainFragmentAdapter(private var onItemViewClickListener: OnItemViewClickLi
                 weather.city.name
             itemView.setOnClickListener {
                 onItemViewClickListener?.onItemViewClick(weather)
-                /*
-                Toast.makeText(
-                    itemView.context,
-                    weather.city.name,
-                    Toast.LENGTH_LONG
-                ).show()
-                */
             }
         }
     }

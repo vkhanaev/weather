@@ -16,8 +16,6 @@ class RepositoryRemoteImpl : RepositorySingle, RepositoryMulti {
         Thread{
             Thread.sleep(200L)
         }.start()
-        //return listOf(Weather())
-        // в зависимости от location отдаем разные списки городов
         return when(location) {
             is Location.Russian -> getRussianCities()
             is Location.World -> getWorldCities()
