@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.weather.model.*
 import com.example.weather.viewmodel.AppState
 import java.lang.IllegalStateException
+import java.lang.Thread.sleep
 import kotlin.random.Random
 
 class WeatherListViewModel(
@@ -33,12 +34,20 @@ class WeatherListViewModel(
     private fun getDataFromLocalSource(location: Location) {
         liveDataToObserve.value = AppState.Loading
 
+        /*
         //if(Random.nextInt(0,5) == 2) {
         if(false) {
             liveDataToObserve.postValue(AppState.Error(IllegalStateException("что-то пошло не так")))
         }else{
             liveDataToObserve.postValue(AppState.SuccessMulti(repositoryMulti.getListWeather(location)))
         }
+        */
+
+        Thread {
+            sleep(300L)
+            liveDataToObserve.postValue(AppState.SuccessMulti(repositoryMulti.getListWeather(location)))
+        }.start()
+
     }
 
     private fun isConnection(): Boolean {
