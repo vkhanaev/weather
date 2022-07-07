@@ -9,7 +9,8 @@ import com.example.weather.R
 import com.example.weather.domain.Weather
 import com.example.weather.ui.view.details.OnItemViewClickListener
 
-class WeatherListAdapter(private var onItemViewClickListener: OnItemViewClickListener?) : RecyclerView.Adapter<WeatherListAdapter.MainViewHolder>() {
+class WeatherListAdapter(private var onItemViewClickListener: OnItemViewClickListener?) :
+    RecyclerView.Adapter<WeatherListAdapter.MainViewHolder>() {
     private var weatherData: List<Weather> = listOf()
     fun setWeather(data: List<Weather>) {
         weatherData = data
@@ -41,10 +42,10 @@ class WeatherListAdapter(private var onItemViewClickListener: OnItemViewClickLis
 
     inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(weather: Weather) {
-            itemView.findViewById<TextView>(R.id.mainFragmentRecyclerItemTextView).text =
-                weather.city.name
-            itemView.setOnClickListener {
-                onItemViewClickListener?.onItemViewClick(weather)
+            itemView.apply {
+                findViewById<TextView>(R.id.mainFragmentRecyclerItemTextView).text =
+                    weather.city.name
+                setOnClickListener { onItemViewClickListener?.onItemViewClick(weather) }
             }
         }
     }

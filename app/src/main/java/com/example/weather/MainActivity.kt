@@ -7,13 +7,11 @@ import com.example.weather.ui.view.weatherlist.WeatherListFragment
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding : MainActivityBinding
+    private lateinit var binding: MainActivityBinding
 
-    // Добавили binding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //setContentView(R.layout.main_activity)
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView((binding.getRoot()))
 

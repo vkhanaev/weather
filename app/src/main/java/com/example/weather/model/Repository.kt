@@ -11,7 +11,6 @@ fun interface RepositoryMulti {
 }
 
 sealed class Location {
-    object Russian:Location()
-    object World:Location()
+    object Russian : Location()
+    object World : Location()
 }
-
