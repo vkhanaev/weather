@@ -37,8 +37,9 @@ class WeatherListViewModel(
         liveDataToObserve.value = AppState.Loading
 
         Thread {
-            sleep(300L)
-            if (Random.nextInt(0, 10) == 1) {
+            //sleep(300L)
+            //if (Random.nextInt(0, 10) == 1) {
+            if (false) {
                 liveDataToObserve.postValue(AppState.Error(IllegalStateException("что-то пошло не так")))
             } else {
                 liveDataToObserve.postValue(
