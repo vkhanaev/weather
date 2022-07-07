@@ -14,11 +14,13 @@ import com.example.weather.R
 import com.example.weather.databinding.FragmentDetailsBinding
 import com.example.weather.domain.Weather
 import com.example.weather.model.dto.WeatherDTO
+import com.example.weather.utils.WeatherLoader
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.*
 import java.util.stream.Collectors
 import javax.net.ssl.HttpsURLConnection
 
@@ -38,6 +40,17 @@ class DetailsFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var weatherBundle: Weather
 
+    private val onLoadListener: WeatherLoader.WeatherLoaderListener =
+        object : WeatherLoader.WeatherLoaderListener {
+            override fun onLoaded(weatherDTO: WeatherDTO) {
+                displayWeather(weatherDTO)
+            }
+
+            override fun onFailed(throwable: Throwable) {
+                //Обработка ошибки
+            }
+        }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,63 +65,11 @@ class DetailsFragment : Fragment() {
         weatherBundle = arguments?.getParcelable(BUNDLE_EXTRA) ?: Weather()
         binding.mainView.visibility = View.GONE
         binding.loadingLayout.visibility = View.VISIBLE
-        loadWeather()
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun loadWeather() {
-        try {
-            val uri =
-                URL("https://api.weather.yandex.ru/v2/forecast?lat=${weatherBundle.city.lat}&lon=${weatherBundle.city.lon}")
-            val handler = Handler()
-            Thread(Runnable {
-                lateinit var urlConnection: HttpsURLConnection
-                try {
-                    urlConnection = uri.openConnection() as HttpsURLConnection
-                    urlConnection.requestMethod = "GET"
-                    urlConnection.addRequestProperty(
-                        "X-Yandex-API-Key",
-                        BuildConfig.WEATHER_API_KEY
-                    )
-                    urlConnection.readTimeout = 5000
-                    val bufferedReader =
-                        BufferedReader(InputStreamReader(urlConnection.inputStream))
-                    // преобразование ответа от сервера (JSON) в модель данных (WeatherDTO)
-                    val weatherDTO: WeatherDTO =
-                        Gson().fromJson(getLines(bufferedReader),
-                            WeatherDTO::class.java)
-                    handler.post { displayWeather(weatherDTO) }
-                } catch (e: Exception) {
-                    Log.e("", "Fail connection", e)
-                    e.printStackTrace()
-                    //Обработка ошибки
-                } finally {
-                    urlConnection.disconnect()
-                }
-            }).start()
-        } catch (e: MalformedURLException) {
-            Log.e("", "Fail URI", e)
-            e.printStackTrace()
-            //Обработка ошибки
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun getLines(reader: BufferedReader): String {
-        return reader.lines().collect(Collectors.joining("\n"))
-    }
-
-
-
-    private fun setData(weather: Weather) {
-        weather.city.also { city ->
-            with(binding) {
-                cityName.text = city.name
-                temperatureValue.text = weather.temperature.toString()
-                feelsLikeValue.text = weather.feelsLike.toString()
-                cityCoordinates.text = "${city.lat}/${city.lon}"
-            }
-        }
+        val loader = WeatherLoader(
+            onLoadListener, weatherBundle.city.lat,
+            weatherBundle.city.lon
+        )
+        loader.loadWeather()
     }
 
     override fun onDestroyView() {
@@ -134,29 +95,27 @@ class DetailsFragment : Fragment() {
     }
 
     //Код расшифровки погодного описания. Возможные значения:
-    fun translateCondition(condition : String?) =
+    fun translateCondition(condition: String?) =
         when (condition) {
-            "clear" -> "ясно"
-            "partly-cloudy" -> "малооблачно"
-            "cloudy" -> "облачно с прояснениями"
-            "overcast" -> "пасмурно"
-            "drizzle" -> "морось"
-            "light-rain" -> "небольшой дождь"
-            "rain" -> "дождь"
-            "moderate-rain" -> "умеренно сильный дождь"
-            "heavy-rain" -> "сильный дождь"
-            "continuous-heavy-rain" -> "длительный сильный дождь"
-            "showers" -> "ливень"
-            "wet-snow" -> "дождь со снегом"
-            "light-snow" -> "небольшой снег"
-            "snow" -> "снег"
-            "snow-showers" -> "снегопад"
-            "hail" -> "град"
-            "thunderstorm" -> "гроза"
-            "thunderstorm-with-rain" -> "дождь с грозой"
-            "thunderstorm-with-hail" -> "гроза с градом"
-            else -> "unknown"
-        }.capitalize()
-
-
+                "clear" -> "ясно"
+                "partly-cloudy" -> "малооблачно"
+                "cloudy" -> "облачно с прояснениями"
+                "overcast" -> "пасмурно"
+                "drizzle" -> "морось"
+                "light-rain" -> "небольшой дождь"
+                "rain" -> "дождь"
+                "moderate-rain" -> "умеренно сильный дождь"
+                "heavy-rain" -> "сильный дождь"
+                "continuous-heavy-rain" -> "длительный сильный дождь"
+                "showers" -> "ливень"
+                "wet-snow" -> "дождь со снегом"
+                "light-snow" -> "небольшой снег"
+                "snow" -> "снег"
+                "snow-showers" -> "снегопад"
+                "hail" -> "град"
+                "thunderstorm" -> "гроза"
+                "thunderstorm-with-rain" -> "дождь с грозой"
+                "thunderstorm-with-hail" -> "гроза с градом"
+                else -> "unknown"
+            }.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 }
