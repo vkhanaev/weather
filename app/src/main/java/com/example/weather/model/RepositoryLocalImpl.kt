@@ -1,14 +1,14 @@
 package com.example.weather.model
 
 import com.example.weather.domain.Weather
+import com.example.weather.domain.getRussianCities
+import com.example.weather.domain.getWorldCities
 
-class RepositoryLocalImpl : Repository {
-    override fun getListWeather(): List<Weather> {
-        return listOf(Weather())
+class RepositoryLocalImpl : RepositorySingle, RepositoryMulti {
+    override fun getWeather(lat: Double, lon: Double) = Weather()
+
+    override fun getListWeather(location: Location) = when (location) {
+        is Location.Russian -> getRussianCities()
+        is Location.World -> getWorldCities()
     }
-
-    override fun getWeather(lat: Double, lon: Double): Weather {
-        return Weather()
-    }
-
 }
