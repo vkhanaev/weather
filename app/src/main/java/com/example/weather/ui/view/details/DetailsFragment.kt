@@ -127,11 +127,36 @@ class DetailsFragment : Fragment() {
                 city.lat.toString(),
                 city.lon.toString()
             )
-            weatherCondition.text = weatherDTO.fact?.condition
+            weatherCondition.text = translateCondition(weatherDTO.fact?.condition)
             temperatureValue.text = weatherDTO.fact?.temp.toString()
             feelsLikeValue.text = weatherDTO.fact?.feels_like.toString()
         }
     }
+
+    //Код расшифровки погодного описания. Возможные значения:
+    fun translateCondition(condition : String?) =
+        when (condition) {
+            "clear" -> "ясно"
+            "partly-cloudy" -> "малооблачно"
+            "cloudy" -> "облачно с прояснениями"
+            "overcast" -> "пасмурно"
+            "drizzle" -> "морось"
+            "light-rain" -> "небольшой дождь"
+            "rain" -> "дождь"
+            "moderate-rain" -> "умеренно сильный дождь"
+            "heavy-rain" -> "сильный дождь"
+            "continuous-heavy-rain" -> "длительный сильный дождь"
+            "showers" -> "ливень"
+            "wet-snow" -> "дождь со снегом"
+            "light-snow" -> "небольшой снег"
+            "snow" -> "снег"
+            "snow-showers" -> "снегопад"
+            "hail" -> "град"
+            "thunderstorm" -> "гроза"
+            "thunderstorm-with-rain" -> "дождь с грозой"
+            "thunderstorm-with-hail" -> "гроза с градом"
+            else -> "unknown"
+        }.capitalize()
+
+
 }
-
-
