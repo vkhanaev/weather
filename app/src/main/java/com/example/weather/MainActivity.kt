@@ -1,13 +1,17 @@
 package com.example.weather
 
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.example.weather.databinding.MainActivityBinding
+import com.example.weather.experiments.MainBroadcastReceiver
 import com.example.weather.ui.view.weatherlist.WeatherListFragment
 
 class MainActivity : AppCompatActivity() {
+    private val receiver = MainBroadcastReceiver()
 
     private lateinit var binding: MainActivityBinding
 
@@ -22,6 +26,8 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container, WeatherListFragment.newInstance())
                 .commitNow()
         }
+
+        registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
     }
 
 
@@ -42,6 +48,11 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(receiver)
+        super.onDestroy()
     }
 
 }
