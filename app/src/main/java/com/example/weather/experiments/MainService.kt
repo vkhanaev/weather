@@ -3,6 +3,7 @@ package com.example.weather.experiments
 import android.app.IntentService
 import android.content.Intent
 import android.util.Log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.weather.TEST_BROADCAST_INTENT_FILTER
 import com.example.weather.THREADS_FRAGMENT_BROADCAST_EXTRA
 
@@ -39,8 +40,6 @@ class MainService(name: String = "MainService") :  IntentService(name) {
     private fun sendBack(result: String) {
         val broadcastIntent = Intent(TEST_BROADCAST_INTENT_FILTER)
         broadcastIntent.putExtra(THREADS_FRAGMENT_BROADCAST_EXTRA, result)
-        sendBroadcast(broadcastIntent)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
     }
-
-
 }

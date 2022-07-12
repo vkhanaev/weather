@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.weather.databinding.FragmentThreadsBinding
 import com.example.weather.experiments.MAIN_SERVICE_INT_EXTRA
 import com.example.weather.experiments.MAIN_SERVICE_STRING_EXTRA
@@ -47,15 +48,18 @@ class ThreadsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context?.registerReceiver(testReceiver,
-            IntentFilter(TEST_BROADCAST_INTENT_FILTER)
-        )
+        context?.let {
+            LocalBroadcastManager.getInstance(it)
+                .registerReceiver(testReceiver,
+            IntentFilter(TEST_BROADCAST_INTENT_FILTER))
+        }
     }
     override fun onDestroy() {
-        context?.unregisterReceiver(testReceiver)
+        context?.let {
+            LocalBroadcastManager.getInstance(it).unregisterReceiver(testReceiver)
+        }
         super.onDestroy()
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
