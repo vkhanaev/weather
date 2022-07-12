@@ -1,5 +1,6 @@
 package com.example.weather
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +12,8 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import com.example.weather.databinding.FragmentThreadsBinding
+import com.example.weather.experiments.MAIN_SERVICE_STRING_EXTRA
+import com.example.weather.experiments.MainService
 import kotlinx.android.synthetic.main.fragment_threads.*
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -30,9 +33,11 @@ class ThreadsFragment : Fragment() {
         _binding = FragmentThreadsBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initServiceButton()
 
         val handlerThread = HandlerThread(getString(R.string.my_handler_thread))
         handlerThread.start()
@@ -99,5 +104,19 @@ class ThreadsFragment : Fragment() {
     companion object {
         fun newInstance() = ThreadsFragment()
     }
+
+    private fun initServiceButton() {
+        binding.serviceButton.setOnClickListener {
+            context?.let {
+                it.startService(Intent(it, MainService::class.java).apply {
+                    putExtra(
+                        MAIN_SERVICE_STRING_EXTRA,
+                        getString(R.string.hello_from_thread_fragment)
+                    )
+                })
+            }
+        }
+    }
+
 
 }
