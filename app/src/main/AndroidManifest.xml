@@ -29,6 +29,13 @@
 
         <service android:name=".experiments.MainService" />
 
+        <receiver android:name=".experiments.MainBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
