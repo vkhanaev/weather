@@ -1,10 +1,14 @@
 package com.example.weather
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,23 +16,50 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import com.example.weather.databinding.FragmentThreadsBinding
+import com.example.weather.experiments.MAIN_SERVICE_INT_EXTRA
 import com.example.weather.experiments.MAIN_SERVICE_STRING_EXTRA
 import com.example.weather.experiments.MainService
 import kotlinx.android.synthetic.main.fragment_threads.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+const val TEST_BROADCAST_INTENT_FILTER = "TEST BROADCAST INTENT FILTER"
+const val THREADS_FRAGMENT_BROADCAST_EXTRA = "THREADS_FRAGMENT_EXTRA"
 
 class ThreadsFragment : Fragment() {
     private var counterThread = 0
 
     private var _binding: FragmentThreadsBinding? = null
     private val binding get() = _binding!!
+
+    //Создаём свой BroadcastReceiver (получатель широковещательного сообщения)
+    private val testReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            //Достаём данные из интента
+            intent.getStringExtra(THREADS_FRAGMENT_BROADCAST_EXTRA)?.let {
+                mainContainer.addView(AppCompatTextView(context).apply {
+                    text = it
+                    textSize = resources.getDimension(R.dimen.main_container_text_size)
+                })
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        context?.registerReceiver(testReceiver,
+            IntentFilter(TEST_BROADCAST_INTENT_FILTER)
+        )
+    }
+    override fun onDestroy() {
+        context?.unregisterReceiver(testReceiver)
+        super.onDestroy()
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-
-
     ): View {
         _binding = FragmentThreadsBinding.inflate(inflater, container, false)
         return binding.root
@@ -90,7 +121,22 @@ class ThreadsFragment : Fragment() {
             }.start()
         }
 
+        initServiceWithBroadcastButton()
     }
+
+    private fun initServiceWithBroadcastButton() {
+        binding.serviceWithBroadcastButton.setOnClickListener {
+            context?.let {
+                it.startService(Intent(it, MainService::class.java).apply {
+                    putExtra(
+                        MAIN_SERVICE_INT_EXTRA,
+                        binding.editText.text.toString().toInt()
+                    )
+                })
+            }
+        }
+    }
+
     private fun startCalculations(seconds: Int): String {
         val date = Date()
         var diffInSec: Long

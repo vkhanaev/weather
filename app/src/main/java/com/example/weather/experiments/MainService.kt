@@ -3,12 +3,19 @@ package com.example.weather.experiments
 import android.app.IntentService
 import android.content.Intent
 import android.util.Log
+import com.example.weather.TEST_BROADCAST_INTENT_FILTER
+import com.example.weather.THREADS_FRAGMENT_BROADCAST_EXTRA
 
 private const val TAG = "MainServiceTAG"
 const val MAIN_SERVICE_STRING_EXTRA = "MainServiceExtra"
+const val MAIN_SERVICE_INT_EXTRA = "MainServiceIntExtra"
 
 class MainService(name: String = "MainService") :  IntentService(name) {
     override fun onHandleIntent(intent: Intent?) {
+        intent?.let {
+            sendBack(it.getIntExtra(MAIN_SERVICE_INT_EXTRA, 0).toString())
+        }
+
         createLogMessage("onHandleIntent ${intent?.getStringExtra(MAIN_SERVICE_STRING_EXTRA)}")
     }
     override fun onCreate() {
@@ -27,5 +34,13 @@ class MainService(name: String = "MainService") :  IntentService(name) {
     private fun createLogMessage(message: String) {
         Log.d(TAG, message)
     }
+
+    //Отправка уведомления о завершении сервиса
+    private fun sendBack(result: String) {
+        val broadcastIntent = Intent(TEST_BROADCAST_INTENT_FILTER)
+        broadcastIntent.putExtra(THREADS_FRAGMENT_BROADCAST_EXTRA, result)
+        sendBroadcast(broadcastIntent)
+    }
+
 
 }
