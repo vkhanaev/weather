@@ -28,6 +28,7 @@
         </activity>
 
         <service android:name=".experiments.MainService" />
+        <service android:name=".ui.view.details.DetailsService" />
 
         <receiver android:name=".experiments.MainBroadcastReceiver"
             android:exported="false">
