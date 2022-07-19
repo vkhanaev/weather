@@ -23,6 +23,7 @@ private const val REQUEST_API_KEY = "X-Yandex-API-Key"
 
 class DetailsService (name: String = "DetailService") : IntentService(name) {
     private val broadcastIntent = Intent(DETAILS_INTENT_FILTER)
+
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onHandleIntent(intent: Intent?) {
         if (intent == null) {
@@ -37,6 +38,7 @@ class DetailsService (name: String = "DetailService") : IntentService(name) {
             }
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.N)
     private fun loadWeather(lat: String, lon: String) {
         try {
@@ -72,6 +74,7 @@ class DetailsService (name: String = "DetailService") : IntentService(name) {
     private fun getLines(reader: BufferedReader): String {
         return reader.lines().collect(Collectors.joining("\n"))
     }
+
     private fun onResponse(weatherDTO: WeatherDTO) {
         val fact = weatherDTO.fact
         if (fact == null) {
@@ -80,6 +83,7 @@ class DetailsService (name: String = "DetailService") : IntentService(name) {
             onSuccessResponse(fact.temp, fact.feels_like, fact.condition)
         }
     }
+
     private fun onSuccessResponse(temp: Int?, feelsLike: Int?, condition:
     String?) {
         putLoadResult(DETAILS_RESPONSE_SUCCESS_EXTRA)
@@ -88,27 +92,33 @@ class DetailsService (name: String = "DetailService") : IntentService(name) {
         broadcastIntent.putExtra(DETAILS_CONDITION_EXTRA, condition)
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
     }
+
     private fun onMalformedURL() {
         putLoadResult(DETAILS_URL_MALFORMED_EXTRA)
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
     }
+
     private fun onErrorRequest(error: String) {
         putLoadResult(DETAILS_REQUEST_ERROR_EXTRA)
         broadcastIntent.putExtra(DETAILS_REQUEST_ERROR_MESSAGE_EXTRA, error)
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
     }
+
     private fun onEmptyResponse() {
         putLoadResult(DETAILS_RESPONSE_EMPTY_EXTRA)
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
     }
+
     private fun onEmptyIntent() {
         putLoadResult(DETAILS_INTENT_EMPTY_EXTRA)
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
     }
+
     private fun onEmptyData() {
         putLoadResult(DETAILS_DATA_EMPTY_EXTRA)
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent)
     }
+
     private fun putLoadResult(result: String) {
         broadcastIntent.putExtra(DETAILS_LOAD_RESULT_EXTRA, result)
     }

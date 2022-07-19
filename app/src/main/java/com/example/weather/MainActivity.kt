@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.example.weather.databinding.MainActivityBinding
 import com.example.weather.experiments.MainBroadcastReceiver
+import com.example.weather.experiments.ThreadsFragment
 import com.example.weather.ui.view.weatherlist.WeatherListFragment
 
 class MainActivity : AppCompatActivity() {

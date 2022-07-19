@@ -1,4 +1,4 @@
-package com.example.weather
+package com.example.weather.experiments
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.weather.R
 import com.example.weather.databinding.FragmentThreadsBinding
 import com.example.weather.experiments.MAIN_SERVICE_INT_EXTRA
 import com.example.weather.experiments.MAIN_SERVICE_STRING_EXTRA
@@ -54,6 +55,7 @@ class ThreadsFragment : Fragment() {
             IntentFilter(TEST_BROADCAST_INTENT_FILTER))
         }
     }
+
     override fun onDestroy() {
         context?.let {
             LocalBroadcastManager.getInstance(it).unregisterReceiver(testReceiver)
@@ -72,7 +74,9 @@ class ThreadsFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initServiceButton()
+        //initServiceButton()
+        initServiceWithBroadcastButton()
+
 
         val handlerThread = HandlerThread(getString(R.string.my_handler_thread))
         handlerThread.start()

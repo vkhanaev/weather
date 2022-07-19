@@ -4,8 +4,6 @@ import android.app.IntentService
 import android.content.Intent
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.example.weather.TEST_BROADCAST_INTENT_FILTER
-import com.example.weather.THREADS_FRAGMENT_BROADCAST_EXTRA
 
 private const val TAG = "MainServiceTAG"
 const val MAIN_SERVICE_STRING_EXTRA = "MainServiceExtra"
