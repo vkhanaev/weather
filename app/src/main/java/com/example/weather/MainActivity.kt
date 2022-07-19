@@ -2,6 +2,7 @@ package com.example.weather
 
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
+        registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
 
